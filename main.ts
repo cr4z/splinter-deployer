@@ -4,9 +4,14 @@ import { unzipSync, strFromU8 } from 'fflate';
 interface SplinterDeployerSettings {
   repo: string;
   token: string;
+  autoFetchOnStart: boolean;
 }
 
-const DEFAULT_SETTINGS: SplinterDeployerSettings = { repo: '', token: '' };
+const DEFAULT_SETTINGS: SplinterDeployerSettings = {
+  repo: '',
+  token: '',
+  autoFetchOnStart: true,
+};
 
 interface GithubReleaseAsset {
   id: number;
@@ -34,7 +39,9 @@ export default class SplinterDeployerPlugin extends Plugin {
       callback: () => this.deploy(),
     });
 
-    void this.deploy();
+    if (this.settings.autoFetchOnStart) {
+      void this.deploy();
+    }
   }
 
   async loadSettings() {
@@ -176,6 +183,18 @@ class SplinterDeployerSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
       });
+
+    new Setting(containerEl)
+      .setName('Auto-fetch on startup')
+      .setDesc(
+        'Automatically run Deploy every time Obsidian starts. Turn off to rely on the "Deploy now" command/button only.',
+      )
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.autoFetchOnStart).onChange(async (value) => {
+          this.plugin.settings.autoFetchOnStart = value;
+          await this.plugin.saveSettings();
+        }),
+      );
 
     new Setting(containerEl)
       .setName('Deploy now')
