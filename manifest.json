@@ -1,0 +1,10 @@
+{
+  "id": "splinter-deployer",
+  "name": "Splinter Deployer",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Deploys the latest nightly build from a private GitHub repo's fixed 'nightly' release into this vault.",
+  "author": "cr4z",
+  "authorUrl": "",
+  "isDesktopOnly": false
+}
