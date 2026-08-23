@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node esbuild.config.mjs",
-    "build": "node esbuild.config.mjs production"
+    "build": "node esbuild.config.mjs production && node deploy-local.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
