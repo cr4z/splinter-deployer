@@ -6,7 +6,7 @@ Obsidian plugin. On every Obsidian startup (and via a "Deploy now" command/butto
 
 1. `npm install`
 2. `cp .env.example .env`, then set `OBSIDIAN_PLUGINS_DIR` to your vault's `.obsidian/plugins` folder.
-3. `npm run build` — bundles the plugin to `main.js` **and** copies `manifest.json` + `main.js` + `styles.css` into `OBSIDIAN_PLUGINS_DIR/splinter-deployer/` automatically. Re-run this after any code change.
+3. `npm run build` — bundles the plugin to `main.js` **and** copies `manifest.json` + `main.js` into `OBSIDIAN_PLUGINS_DIR/splinter-deployer/` automatically. Re-run this after any code change.
 4. In Obsidian: Settings → Community plugins → enable **Splinter Deployer**.
 5. In the plugin's settings tab, set:
    - **Source repository**: `owner/repo` of the vault-codebase-style repo producing the nightly build.
