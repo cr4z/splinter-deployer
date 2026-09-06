@@ -25,7 +25,7 @@ if (!pluginsDir) {
 const target = resolve(pluginsDir, 'splinter-deployer');
 mkdirSync(target, { recursive: true });
 
-for (const file of ['manifest.json', 'main.js', 'styles.css']) {
+for (const file of ['manifest.json', 'main.js']) {
   const src = resolve(__dirname, file);
   if (!existsSync(src)) {
     console.log(`deploy-local: ${file} missing, skipping.`);

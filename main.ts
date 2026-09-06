@@ -5,14 +5,12 @@ interface SplinterDeployerSettings {
   repo: string;
   token: string;
   autoFetchOnStart: boolean;
-  branch: string;
 }
 
 const DEFAULT_SETTINGS: SplinterDeployerSettings = {
   repo: '',
   token: '',
   autoFetchOnStart: true,
-  branch: 'nightly',
 };
 
 interface GithubReleaseAsset {
@@ -55,32 +53,31 @@ export default class SplinterDeployerPlugin extends Plugin {
   }
 
   async deploy() {
-    const { repo, token, branch } = this.settings;
+    const { repo, token } = this.settings;
     if (!repo || !repo.includes('/') || !token) {
       new Notice('Splinter Deployer: set "owner/repo" and a PAT in plugin settings first.');
       return;
     }
-    const tag = branch.trim() || DEFAULT_SETTINGS.branch;
 
     const authHeaders = { Authorization: `Bearer ${token}` };
 
     let asset: GithubReleaseAsset | undefined;
     try {
       const resp = await requestUrl({
-        url: `https://api.github.com/repos/${repo}/releases/tags/${tag}`,
+        url: `https://api.github.com/repos/${repo}/releases/tags/nightly`,
         headers: { ...authHeaders, Accept: 'application/vnd.github+json' },
       });
       const release = JSON.parse(resp.text) as GithubRelease;
-      asset = release.assets.find((a) => a.name === `${tag}.zip`);
-      if (!asset) throw new Error(`${tag}.zip not found on the "${tag}" release`);
+      asset = release.assets.find((a) => a.name === 'nightly.zip');
+      if (!asset) throw new Error('nightly.zip not found on the nightly release');
     } catch (err) {
-      new Notice(`Splinter Deployer: could not find "${tag}" release — ${errMessage(err)}`);
+      new Notice(`Splinter Deployer: could not find nightly release — ${errMessage(err)}`);
       return;
     }
 
     let zipBuf: ArrayBuffer;
     try {
-      new Notice(`Splinter Deployer: downloading ${tag} build…`);
+      new Notice('Splinter Deployer: downloading nightly build…');
       const resp = await requestUrl({
         url: `https://api.github.com/repos/${repo}/releases/assets/${asset.id}`,
         headers: { ...authHeaders, Accept: 'application/octet-stream' },
@@ -186,21 +183,6 @@ class SplinterDeployerSettingTab extends PluginSettingTab {
             await this.plugin.saveSettings();
           });
       });
-
-    new Setting(containerEl)
-      .setName('Release / branch')
-      .setDesc(
-        'Release tag of the source repo to deploy from (its build workflow tags a release per branch, e.g. "nightly" or a feature branch name). Looks for "<tag>.zip" on that release.',
-      )
-      .addText((text) =>
-        text
-          .setPlaceholder('nightly')
-          .setValue(this.plugin.settings.branch)
-          .onChange(async (value) => {
-            this.plugin.settings.branch = value.trim();
-            await this.plugin.saveSettings();
-          }),
-      );
 
     new Setting(containerEl)
       .setName('Auto-fetch on startup')
