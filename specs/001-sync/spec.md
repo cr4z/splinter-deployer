@@ -2,22 +2,21 @@
 
 ## What
 
-On every Obsidian startup — if auto-fetch on startup is enabled (default on) — and on demand via the "Deploy now" command/settings button regardless of that setting, Splinter Deployer downloads the configured release build (default the `nightly` tag) of a configured private GitHub repo and writes it into the current vault. It is a second, redundant deployment path alongside that repo's own manual `npm run build` — neither depends on the other.
+On every Obsidian startup — if auto-fetch on startup is enabled (default on) — and on demand via the "Deploy now" command/settings button regardless of that setting, Splinter Deployer downloads the latest nightly build of a configured private GitHub repo and writes it into the current vault. It is a second, redundant deployment path alongside that repo's own manual `npm run build` — neither depends on the other.
 
 ## Settings UI
 
-Four fields, plus one button, under a single plugin settings tab:
+Three fields, plus one button, under a single plugin settings tab:
 
 - **Source repository** — plain text, `owner/repo` (e.g. `cr4z/vault-codebase`).
 - **GitHub personal access token** — password-style text field. A fine-grained PAT scoped to `Contents: Read` on that one repo only.
-- **Release / branch** — plain text, the release tag to deploy from. Defaults to `nightly`; blank falls back to the default.
 - **Auto-fetch on startup** — toggle, default on. Gates only the automatic deploy on Obsidian startup; has no effect on manual deploys.
 - **Deploy now** — a button that runs the same deploy routine used automatically on startup, unconditionally regardless of the toggle above.
 
 ## Behavior
 
-1. Validate repo/token are present; notify and stop if not.
-2. Look up the repo's release tagged with the configured tag (default `nightly`) via the authenticated GitHub REST API and find its `<tag>.zip` asset.
+1. Validate both settings are present; notify and stop if not.
+2. Look up the repo's `nightly`-tagged release via the authenticated GitHub REST API and find its `nightly.zip` asset.
 3. Download that asset's binary contents via the same authenticated API.
 4. Unzip in memory; read `config.json` and every file it references.
 5. For each `config.json` entry, create any missing parent folders and write the file to its vault-relative destination path, creating it if absent or overwriting it if present.
